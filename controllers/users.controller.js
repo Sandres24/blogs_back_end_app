@@ -10,6 +10,7 @@ const { Comment } = require('../models/comment.model');
 // Utils
 const { catchAsync } = require('../utils/catchAsync.util');
 const { AppError } = require('../utils/appError.util');
+const { Email } = require('../utils/email.util');
 
 // Gen secrets for JWT, require('crypto').randomBytes(64).toString('hex')
 
@@ -59,6 +60,9 @@ const createUser = catchAsync(async (req, res, next) => {
   // Remove password from response
   // delete newUser.password;
   newUser.password = undefined;
+
+  // Send wellcome email
+  await new Email(email).sendWellcome(name);
 
   res.status(201).json({
     status: 'success',

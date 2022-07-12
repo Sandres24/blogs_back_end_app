@@ -3,11 +3,13 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
+const path = require('path');
 
 // Routers
 const { usersRouter } = require('./routes/users.routes');
 const { postsRouter } = require('./routes/posts.routes');
 const { commentRouter } = require('./routes/comments.routes');
+const { viewsRouter } = require('./routes/views.routes');
 
 // Global err controller
 const { globalErrorHandler } = require('./controllers/error.controller');
@@ -21,6 +23,13 @@ const app = express();
 // middlewares
 // Enable incoming JSON
 app.use(express.json());
+
+// Set template engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serving static files G:\Academlo\Material de clase\3 - Desarrollo backend con Node y Express\Semana 3 (17) - Postgresql\Proyectos\27junio\app.js\public
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Limit the number of requests that can be accepted to our sever
 const limiter = rateLimit({
@@ -45,6 +54,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Define endpoints
+app.use('/', viewsRouter);
 // http://localhost:4000/api/v1/users
 app.use('/api/v1/users', usersRouter); // next(error)
 // http://localhost:4000/api/v1/posts
